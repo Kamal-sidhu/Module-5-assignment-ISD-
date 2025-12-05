@@ -5,31 +5,29 @@ from patterns.strategy.minimum_balance_strategy import MinimumBalanceStrategy
 class SavingsAccount(BankAccount):
 
     def __init__(self, account_number, client, date_opened, balance, minimum_balance, premium_fee):
-        """
-        Assignment 3 SavingsAccount using Strategy Pattern
-        """
-
+        """Assignment 3 SavingsAccount using Strategy Pattern."""
         super().__init__(account_number, client, date_opened, balance)
 
-        # validate minimum balance
+        # Minimum balance
         try:
             self.minimum_balance = float(minimum_balance)
-        except (ValueError, TypeError):
+        except:
             self.minimum_balance = 50.0
 
-        # validate premium fee
+        # Premium fee
         try:
             self.premium_fee = float(premium_fee)
-        except (ValueError, TypeError):
+        except:
             self.premium_fee = 2.0
 
-        # Strategy Pattern setup
-        self._service_strategy = MinimumBalanceStrategy(self.minimum_balance, self.premium_fee)
+        # Strategy Pattern
+        self._service_strategy = MinimumBalanceStrategy(
+            self.minimum_balance,
+            self.premium_fee
+        )
 
     def get_service_charges(self):
-        """
-        Uses Strategy Pattern instead of inline logic.
-        """
+        """Calculate charges via strategy."""
         return self._service_strategy.calculate_service_charges(self)
 
     def __str__(self):

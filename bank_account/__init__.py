@@ -1,4 +1,11 @@
-from .bank_account import BankAccount, BASE_SERVICE_CHARGE
+from .bank_account import BankAccount
 from .chequing_account import ChequingAccount
-from .investment_account import InvestmentAccount
 from .savings_account import SavingsAccount
+from .investment_account import InvestmentAccount
+
+__all__ = [
+    "BankAccount",
+    "ChequingAccount",
+    "SavingsAccount",
+    "InvestmentAccount",
+]

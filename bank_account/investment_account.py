@@ -4,28 +4,25 @@ from patterns.strategy.management_fee_strategy import ManagementFeeStrategy
 
 class InvestmentAccount(BankAccount):
 
-    def __init__(self, account_number, client, date_opened, balance, management_fee, anniversary_date):
-        """
-        Assignment 3 InvestmentAccount (Strategy + Observer Ready)
-        """
+    def __init__(self, account_number, client, date_opened, balance,
+                 management_fee, anniversary_date):
+
         super().__init__(account_number, client, date_opened, balance)
 
-        # Validate management fee
         try:
             self.management_fee = float(management_fee)
-        except (ValueError, TypeError):
+        except:
             self.management_fee = 2.55
 
-        # Anniversary date must be a datetime.date
         self.anniversary_date = anniversary_date
 
-        # Strategy Pattern object
-        self._service_strategy = ManagementFeeStrategy(self.management_fee, self.anniversary_date)
+        self._service_strategy = ManagementFeeStrategy(
+            self.management_fee,
+            self.anniversary_date
+        )
 
-    def get_service_charges(self):
-        """
-        Uses Strategy Pattern to compute charges.
-        """
+    # REQUIRED
+    def calculate_service_charge(self):
         return self._service_strategy.calculate_service_charges(self)
 
     def __str__(self):

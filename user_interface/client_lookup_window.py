@@ -19,24 +19,28 @@ class ClientLookupWindow(LookupWindow):
         # Load client + account dictionaries
         self.client_listing, self.accounts = load_data()
 
-        # Existing GUI connections
+        # Existing connections
         self.lookup_button.clicked.connect(self.on_lookup_client)
         self.client_number_edit.textChanged.connect(self.on_text_changed)
         self.account_table.cellClicked.connect(self.on_select_account)
 
-        # NEW FOR ASSIGNMENT 5:
+        # NEW FOR ASSIGNMENT 5
         self.filter_button.clicked.connect(self.on_filter_clicked)
-        self.filter_button.setEnabled(False)     # Disabled until a client loads
+        self.filter_button.setEnabled(False)
+
+        # Filtering widgets start disabled (required in assignment)
+        self.filter_combo_box.setEnabled(False)
+        self.filter_edit.setEnabled(False)
+        self.filter_label.setText("Data is Not Currently Filtered")
 
 
     # --------------------------------------------------------
     # LOOKUP CLIENT BUTTON CLICKED
     # --------------------------------------------------------
     def on_lookup_client(self):
-        # Reset display from parent class
         self.reset_display()
 
-        # Reset filtering (NEW)
+        # Reset filtering state
         self.toggle_filter(False)
 
         # Convert client number
@@ -59,8 +63,10 @@ class ClientLookupWindow(LookupWindow):
             f"{client.last_name}, {client.first_name} [{client.client_number}]"
         )
 
-        # Enable filtering (NEW)
+        # Enable filtering widgets
         self.filter_button.setEnabled(True)
+        self.filter_combo_box.setEnabled(True)
+        self.filter_edit.setEnabled(True)
 
         # Populate the table with this client's accounts
         self.account_table.setRowCount(0)
@@ -91,7 +97,7 @@ class ClientLookupWindow(LookupWindow):
 
 
     # --------------------------------------------------------
-    # FILTER BUTTON CLICKED (NEW - Assignment 5)
+    # FILTER BUTTON CLICKED (NEW)
     # --------------------------------------------------------
     def on_filter_clicked(self):
         button_text = self.filter_button.text()
@@ -100,7 +106,7 @@ class ClientLookupWindow(LookupWindow):
             col_index = self.filter_combo_box.currentIndex()
             search_text = self.filter_edit.text().strip().lower()
 
-            # Loop through rows and hide those that do not match
+            # Loop rows and hide those that do not match
             for row in range(self.account_table.rowCount()):
                 item = self.account_table.item(row, col_index)
 
@@ -112,29 +118,32 @@ class ClientLookupWindow(LookupWindow):
             self.toggle_filter(True)
 
         else:
-            # Reset to show all rows
+            # Reset filter
             self.toggle_filter(False)
 
 
     # --------------------------------------------------------
-    # TOGGLE FILTER (NEW - Assignment 5)
+    # TOGGLE FILTER (NEW)
     # --------------------------------------------------------
     def toggle_filter(self, filter_on: bool):
 
         if filter_on:
+            # Filtering active
             self.filter_button.setText("Reset")
             self.filter_combo_box.setEnabled(False)
             self.filter_edit.setEnabled(False)
             self.filter_label.setText("Data is Currently Filtered")
 
         else:
+            # Filtering OFF – restore full list
             self.filter_button.setText("Apply Filter")
             self.filter_combo_box.setEnabled(True)
             self.filter_edit.setEnabled(True)
+
             self.filter_edit.setText("")
             self.filter_combo_box.setCurrentIndex(0)
 
-            # Show all rows again
+            # Unhide all rows
             for row in range(self.account_table.rowCount()):
                 self.account_table.setRowHidden(row, False)
 
@@ -147,6 +156,8 @@ class ClientLookupWindow(LookupWindow):
     def on_text_changed(self, text):
         self.account_table.setRowCount(0)
         self.filter_button.setEnabled(False)
+        self.filter_combo_box.setEnabled(False)
+        self.filter_edit.setEnabled(False)
 
 
     # --------------------------------------------------------
@@ -172,14 +183,11 @@ class ClientLookupWindow(LookupWindow):
                                  f"Bank Account {account_number} does not exist.")
             return
 
-        # Found the account — create details dialog
         account_obj = self.accounts[account_number]
 
         dialog = AccountDetailsWindow(account_obj)
 
-        # connect signal
         dialog.balance_updated.connect(self.update_data)
-
         dialog.exec_()
 
 
@@ -195,3 +203,4 @@ class ClientLookupWindow(LookupWindow):
 
         self.accounts[account.account_number] = account
         update_data(account)
+

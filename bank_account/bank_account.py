@@ -2,7 +2,7 @@ from abc import ABC
 from patterns.observer.subject import Subject
 
 # -------------------------------------------------------------------
-# REQUIRED CONSTANT FOR backwards compatibility (Fix for Assignment 5)
+# REQUIRED CONSTANT (Assignment 5)
 # -------------------------------------------------------------------
 BASE_SERVICE_CHARGE = 0.00
 
@@ -24,8 +24,39 @@ class BankAccount(Subject, ABC):
         except:
             self.balance = 0.0
 
+        # ------------------------------------------------------------
+        # STRATEGY PATTERN – service charge strategy placeholder
+        # ------------------------------------------------------------
+        self.service_charge_strategy = None
+
     # ------------------------------------------------------------
-    # Update balance + notify if thresholds are crossed
+    # Assign a strategy at runtime
+    # ------------------------------------------------------------
+    def set_strategy(self, strategy):
+        """
+        Sets the service charge strategy dynamically.
+        """
+        self.service_charge_strategy = strategy
+
+    # ------------------------------------------------------------
+    # Apply the selected strategy
+    # ------------------------------------------------------------
+    def apply_service_charge(self):
+        """
+        Calls the chosen service charge strategy and deducts from balance.
+        """
+        if self.service_charge_strategy is None:
+            return BASE_SERVICE_CHARGE
+
+        charge_amount = self.service_charge_strategy.calculate_charge(self)
+
+        # Deduct charge
+        self.update_balance(-abs(charge_amount))
+
+        return charge_amount
+
+    # ------------------------------------------------------------
+    # Update balance + notify observer based on thresholds
     # ------------------------------------------------------------
     def update_balance(self, amount):
         try:
@@ -59,6 +90,9 @@ class BankAccount(Subject, ABC):
 
         self.update_balance(amount)
 
+        # Apply Service Charge (Strategy)
+        self.apply_service_charge()
+
     # ------------------------------------------------------------
     # Withdraw funds
     # ------------------------------------------------------------
@@ -70,6 +104,9 @@ class BankAccount(Subject, ABC):
             raise ValueError("Insufficient funds.")
 
         self.update_balance(-amount)
+
+        # Apply Service Charge (Strategy)
+        self.apply_service_charge()
 
     # ------------------------------------------------------------
     # String Representation

@@ -14,10 +14,18 @@ class ChequingAccount(BankAccount):
     def calculate_service_charge(self):
         if self.balance >= self.overdraft_limit:
             return BASE_SERVICE_CHARGE
-        return abs(self.overdraft_limit - self.balance) * self.overdraft_rate
+        else:
+            diff = self.overdraft_limit - self.balance
+            return BASE_SERVICE_CHARGE + diff * self.overdraft_rate
+
+    def get_service_charges(self):
+        return self.calculate_service_charge()
 
     def __str__(self):
-        return (super().__str__() +
-                f"\nOverdraft Limit: ${self.overdraft_limit:.2f}, "
-                f"Overdraft Rate: {self.overdraft_rate}, "
-                f"Account Type: Chequing")
+        base = super().__str__()
+        return (
+            f"{base}\n"
+            f"Overdraft Limit: ${self.overdraft_limit:.2f}, "
+            f"Overdraft Rate: {self.overdraft_rate*100:.2f}%, "
+            f"Account Type: Chequing"
+        )

@@ -12,10 +12,19 @@ class SavingsAccount(BankAccount):
         self.premium_fee = float(premium_fee)
 
     def calculate_service_charge(self):
-        return BASE_SERVICE_CHARGE if self.balance >= self.minimum_balance else self.premium_fee
+        if self.balance >= self.minimum_balance:
+            return BASE_SERVICE_CHARGE
+        else:
+            return BASE_SERVICE_CHARGE * self.premium_fee
+
+    def get_service_charges(self):
+        return self.calculate_service_charge()
 
     def __str__(self):
-        return (super().__str__() +
-                f"\nMinimum Balance: ${self.minimum_balance:.2f}, "
-                f"Premium Fee: ${self.premium_fee:.2f}, "
-                f"Account Type: Savings")
+        base = super().__str__()
+        return (
+            f"{base}\n"
+            f"Minimum Balance: ${self.minimum_balance:.2f}, "
+            f"Premium Fee: ${self.premium_fee:.2f}, "
+            f"Account Type: Savings"
+        )

@@ -8,19 +8,18 @@ class InvestmentAccount(BankAccount):
         """
         Assignment 3 InvestmentAccount (Strategy + Observer Ready)
         """
-
         super().__init__(account_number, client, date_opened, balance)
 
-        # validate management fee
+        # Validate management fee
         try:
             self.management_fee = float(management_fee)
         except (ValueError, TypeError):
             self.management_fee = 2.55
 
-        # validate anniversary date
+        # Anniversary date must be a datetime.date
         self.anniversary_date = anniversary_date
 
-        # Assign Strategy Pattern object
+        # Strategy Pattern object
         self._service_strategy = ManagementFeeStrategy(self.management_fee, self.anniversary_date)
 
     def get_service_charges(self):

@@ -1,5 +1,6 @@
-PiXELL-River Financial System Documentation
-===========================================
+===================================
+PiXELL-River Financial System Docs
+===================================
 
 Welcome to the official documentation for the PiXELL-River Financial System.
 This documentation includes details for all major modules, classes, and GUI 
@@ -10,80 +11,74 @@ components used in the application.
    :caption: Contents:
 
 
-Module Documentation
---------------------
-
-.. automodule:: pixell_river
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 Bank Account Package
 --------------------
 
 .. automodule:: bank_account.bank_account
     :members:
-    :undoc-members:
-    :show-inheritance:
 
-Patterns Package
---------------------
-
-.. automodule:: patterns.service_charge_strategy
+.. automodule:: bank_account.chequing_account
     :members:
-    :undoc-members:
-    :show-inheritance:
 
-.. automodule:: patterns.observer
+.. automodule:: bank_account.savings_account
     :members:
-    :undoc-members:
-    :show-inheritance:
 
-UI Superclasses
---------------------
 
-.. automodule:: ui_superclasses.lookup_window
+Client Package
+--------------
+
+.. automodule:: client.client
     :members:
-    :undoc-members:
 
-.. automodule:: ui_superclasses.details_window
+
+Strategy Pattern
+----------------
+
+.. automodule:: patterns.strategy.overdraft_strategy
     :members:
-    :undoc-members:
 
-User Interface Package
-----------------------
+.. automodule:: patterns.strategy.management_fee_strategy
+    :members:
+
+.. automodule:: patterns.strategy.minimum_balance_strategy
+    :members:
+
+
+Observer Pattern
+----------------
+
+.. automodule:: patterns.observer.subject
+    :members:
+
+.. automodule:: patterns.observer.observer
+    :members:
+
+
+User Interface
+--------------
 
 .. automodule:: user_interface.client_lookup_window
     :members:
-    :undoc-members:
-    :show-inheritance:
 
 .. automodule:: user_interface.account_details_window
     :members:
-    :undoc-members:
-    :show-inheritance:
 
 .. automodule:: user_interface.manage_data
     :members:
-    :undoc-members:
-    :show-inheritance:
+
+
+UI Superclasses
+---------------
+
+.. automodule:: ui_superclasses.lookup_window
+    :members:
+
+.. automodule:: ui_superclasses.details_window
+    :members:
+
 
 Utility Package
---------------------
+---------------
 
-.. automodule:: utility.file_utils
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-Tests Package (Optional)
-------------------------
-
-.. automodule:: tests.test_chequing_account
-    :members:
-
-.. automodule:: tests.test_investment_account
-    :members:
-
-.. automodule:: tests.test_savings_account
+.. automodule:: utility.service_charge_logger
     :members:

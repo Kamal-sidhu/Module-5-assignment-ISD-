@@ -2,75 +2,59 @@ from abc import ABC, abstractmethod
 from patterns.observer.subject import Subject
 
 # ---------------------------------------------------------
-# REQUIRED CONSTANT (Backward compatibility for Assignment 5)
+# REQUIRED CONSTANT for Assignment 5 (backward compatibility)
 # ---------------------------------------------------------
 BASE_SERVICE_CHARGE = 0.00
 
 
 class BankAccount(Subject, ABC):
     """
-    Abstract BankAccount class used as the parent for
-    ChequingAccount, SavingsAccount, and InvestmentAccount.
-
+    Base BankAccount class used by Chequing, Savings, Investment accounts.
     Assignment 5 Requirements:
-    - Must inherit from Subject (Observer Pattern)
-    - Must define an abstract calculate_service_charge() (Strategy Pattern)
-    - Must trigger notifications on low balance + large transactions
+    - Must include Observer Pattern (extends Subject)
+    - Must define abstract calculate_service_charge()
+    - Must notify on low balance + large transactions
     """
 
     LOW_BALANCE_LEVEL = 50.00
     LARGE_TRANSACTION_THRESHOLD = 5000.00
 
-    def __init__(self, account_number, client, date_opened, balance=0.0):
+    def __init__(self, account_number, balance, date_created):
         super().__init__()
 
         self.account_number = account_number
-        self.client = client
-        self.date_opened = date_opened
+        self.balance = float(balance)
 
-        try:
-            self.balance = float(balance)
-        except:
-            self.balance = 0.0
+        # tests expect this exact property name
+        self.date_created = date_created
 
-        # Strategy placeholder — will be overridden in subclasses
+        # Strategy object will be set in subclasses
         self.service_charge_strategy = None
 
     # ---------------------------------------------------------
-    # REQUIRED BY ASSIGNMENT 5 — STRATEGY PATTERN
+    # REQUIRED ABSTRACT METHOD (Strategy Pattern)
     # ---------------------------------------------------------
     @abstractmethod
     def calculate_service_charge(self):
         """
-        Each account type MUST override this.
-        Chequing, Savings, Investment accounts will apply their own strategy.
+        Must be overridden by Chequing, Savings, and Investment accounts.
         """
         pass
 
     # ---------------------------------------------------------
-    # Update balance + notify observers
+    # Balance update + notifications
     # ---------------------------------------------------------
     def update_balance(self, amount):
-        try:
-            amount = float(amount)
-        except:
-            return
-
+        amount = float(amount)
         self.balance += amount
 
         # Low balance notification
         if self.balance < self.LOW_BALANCE_LEVEL:
-            self.notify(
-                f"Low balance warning ${self.balance:,.2f}: "
-                f"on account {self.account_number}."
-            )
+            self.notify(f"Low balance warning ${self.balance:,.2f}: on account {self.account_number}.")
 
         # Large transaction notification
         if abs(amount) > self.LARGE_TRANSACTION_THRESHOLD:
-            self.notify(
-                f"Large transaction ${abs(amount):,.2f}: "
-                f"on account {self.account_number}."
-            )
+            self.notify(f"Large transaction ${abs(amount):,.2f}: on account {self.account_number}.")
 
     # ---------------------------------------------------------
     # Deposit
@@ -79,7 +63,6 @@ class BankAccount(Subject, ABC):
         amount = float(amount)
         if amount <= 0:
             raise ValueError("Deposit amount must be positive.")
-
         self.update_balance(amount)
 
     # ---------------------------------------------------------
@@ -100,7 +83,4 @@ class BankAccount(Subject, ABC):
     # String representation
     # ---------------------------------------------------------
     def __str__(self):
-        return (
-            f"Account Number: {self.account_number}, "
-            f"Balance: ${self.balance:,.2f}"
-        )
+        return f"Account Number: {self.account_number}, Balance: ${self.balance:,.2f}"

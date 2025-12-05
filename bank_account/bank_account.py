@@ -1,13 +1,22 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from patterns.observer.subject import Subject
 
-# -------------------------------------------------------------------
-# REQUIRED CONSTANT (Assignment 5)
-# -------------------------------------------------------------------
+# ---------------------------------------------------------
+# REQUIRED CONSTANT (Backward compatibility for Assignment 5)
+# ---------------------------------------------------------
 BASE_SERVICE_CHARGE = 0.00
 
 
 class BankAccount(Subject, ABC):
+    """
+    Abstract BankAccount class used as the parent for
+    ChequingAccount, SavingsAccount, and InvestmentAccount.
+
+    Assignment 5 Requirements:
+    - Must inherit from Subject (Observer Pattern)
+    - Must define an abstract calculate_service_charge() (Strategy Pattern)
+    - Must trigger notifications on low balance + large transactions
+    """
 
     LOW_BALANCE_LEVEL = 50.00
     LARGE_TRANSACTION_THRESHOLD = 5000.00
@@ -24,40 +33,23 @@ class BankAccount(Subject, ABC):
         except:
             self.balance = 0.0
 
-        # ------------------------------------------------------------
-        # STRATEGY PATTERN – service charge strategy placeholder
-        # ------------------------------------------------------------
+        # Strategy placeholder — will be overridden in subclasses
         self.service_charge_strategy = None
 
-    # ------------------------------------------------------------
-    # Assign a strategy at runtime
-    # ------------------------------------------------------------
-    def set_strategy(self, strategy):
+    # ---------------------------------------------------------
+    # REQUIRED BY ASSIGNMENT 5 — STRATEGY PATTERN
+    # ---------------------------------------------------------
+    @abstractmethod
+    def calculate_service_charge(self):
         """
-        Sets the service charge strategy dynamically.
+        Each account type MUST override this.
+        Chequing, Savings, Investment accounts will apply their own strategy.
         """
-        self.service_charge_strategy = strategy
+        pass
 
-    # ------------------------------------------------------------
-    # Apply the selected strategy
-    # ------------------------------------------------------------
-    def apply_service_charge(self):
-        """
-        Calls the chosen service charge strategy and deducts from balance.
-        """
-        if self.service_charge_strategy is None:
-            return BASE_SERVICE_CHARGE
-
-        charge_amount = self.service_charge_strategy.calculate_charge(self)
-
-        # Deduct charge
-        self.update_balance(-abs(charge_amount))
-
-        return charge_amount
-
-    # ------------------------------------------------------------
-    # Update balance + notify observer based on thresholds
-    # ------------------------------------------------------------
+    # ---------------------------------------------------------
+    # Update balance + notify observers
+    # ---------------------------------------------------------
     def update_balance(self, amount):
         try:
             amount = float(amount)
@@ -66,23 +58,23 @@ class BankAccount(Subject, ABC):
 
         self.balance += amount
 
-        # Notify if low balance
+        # Low balance notification
         if self.balance < self.LOW_BALANCE_LEVEL:
             self.notify(
                 f"Low balance warning ${self.balance:,.2f}: "
                 f"on account {self.account_number}."
             )
 
-        # Notify if large transaction
+        # Large transaction notification
         if abs(amount) > self.LARGE_TRANSACTION_THRESHOLD:
             self.notify(
                 f"Large transaction ${abs(amount):,.2f}: "
                 f"on account {self.account_number}."
             )
 
-    # ------------------------------------------------------------
-    # Deposit funds
-    # ------------------------------------------------------------
+    # ---------------------------------------------------------
+    # Deposit
+    # ---------------------------------------------------------
     def deposit(self, amount):
         amount = float(amount)
         if amount <= 0:
@@ -90,27 +82,23 @@ class BankAccount(Subject, ABC):
 
         self.update_balance(amount)
 
-        # Apply Service Charge (Strategy)
-        self.apply_service_charge()
-
-    # ------------------------------------------------------------
-    # Withdraw funds
-    # ------------------------------------------------------------
+    # ---------------------------------------------------------
+    # Withdraw
+    # ---------------------------------------------------------
     def withdraw(self, amount):
         amount = float(amount)
+
         if amount <= 0:
             raise ValueError("Withdraw amount must be positive.")
+
         if amount > self.balance:
             raise ValueError("Insufficient funds.")
 
         self.update_balance(-amount)
 
-        # Apply Service Charge (Strategy)
-        self.apply_service_charge()
-
-    # ------------------------------------------------------------
-    # String Representation
-    # ------------------------------------------------------------
+    # ---------------------------------------------------------
+    # String representation
+    # ---------------------------------------------------------
     def __str__(self):
         return (
             f"Account Number: {self.account_number}, "

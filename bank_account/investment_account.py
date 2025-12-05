@@ -1,35 +1,20 @@
-from bank_account.bank_account import BankAccount
-from patterns.strategy.management_fee_strategy import ManagementFeeStrategy
+from datetime import date, timedelta
+from bank_account.bank_account import BankAccount, BASE_SERVICE_CHARGE
 
 
 class InvestmentAccount(BankAccount):
 
-    def __init__(self, account_number, client, date_opened, balance,
-                 management_fee, anniversary_date):
+    def __init__(self, account_number, balance,
+                 date_created=None, management_fee=2.5):
 
-        super().__init__(account_number, client, date_opened, balance)
+        super().__init__(account_number, balance, date_created)
+        self.management_fee = float(management_fee)
 
-        try:
-            self.management_fee = float(management_fee)
-        except:
-            self.management_fee = 2.55
-
-        self.anniversary_date = anniversary_date
-
-        self._service_strategy = ManagementFeeStrategy(
-            self.management_fee,
-            self.anniversary_date
-        )
-
-    # REQUIRED
     def calculate_service_charge(self):
-        return self._service_strategy.calculate_service_charges(self)
+        age_years = (date.today() - self.date_created).days / 365
+        return BASE_SERVICE_CHARGE if age_years > 10 else self.management_fee
 
     def __str__(self):
-        base = super().__str__()
-        return (
-            f"{base}\n"
-            f"Management Fee: ${self.management_fee:.2f}, "
-            f"Anniversary Month: {self.anniversary_date.month}, "
-            f"Account Type: Investment"
-        )
+        return (super().__str__() +
+                f"\nManagement Fee: ${self.management_fee:.2f}, "
+                f"Account Type: Investment")
